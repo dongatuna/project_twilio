@@ -1,0 +1,19 @@
+{
+  "name": "project_twilio",
+  "version": "1.0.0",
+  "description": "'Setting up ngrok and learning twilio'",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "author": "Don Gatuna",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
