@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const TWILIO = require('../config')
-const accountSid = TWILIO.account_SID
-const authToken = TWILIO.auth_Token
+//const TWILIO = require('../config')
+//const accountSid = TWILIO.account_SID
+//const authToken = TWILIO.auth_Token
 //const twilio = require('twilio')
 const MessagingResponse = require('twilio').twiml.MessagingResponse
 
-router.post('/sms', (req, res) => {
+router.post('/', (req, res) => {
 
     const twiml = new MessagingResponse()
 
@@ -16,4 +16,6 @@ router.post('/sms', (req, res) => {
     res.end(twiml.toString())
 
 })
+
+module.exports = router
 
