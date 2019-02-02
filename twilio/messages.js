@@ -11,6 +11,7 @@ const client = new twilio(accountSid, authToken)
 
 const time = new Date().toLocaleTimeString().split(" ")[0]
 
+//sends a message from my twilio number to a cell phone
 client.messages
     .create(
         {
