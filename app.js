@@ -3,7 +3,14 @@ const morgan = require('morgan')
 const path = require('path') //used to declare the public folder 
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
+mongoose.Promise = global.Promise
+
+//connect to the database
+mongoose.connect('mongodb://localhost/twilio', {useNewUrlParser: true})
+
+//initialize the express and save it in app
 const app = express()
 
 //Set the public folder

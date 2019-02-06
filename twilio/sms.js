@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const TWILIO = require('../config')
-const accountSid = TWILIO.account_SID
-const authToken = TWILIO.auth_Token
+const TWILIO_CONFIG = require('../config')
+const mongoose = require('mongoose')
+const Task = require('../models/task')
+const accountSid = TWILIO_CONFIG.account_SID
+const authToken = TWILIO_CONFIG.auth_Token
 const twilio = require('twilio')
 const client = new twilio(accountSid, authToken)
 //const MessagingResponse = require('twilio').twiml.MessagingResponse
@@ -15,72 +17,74 @@ router.post('/', async (req, res) => {
         const smsText = req.body.Body
         const word =  smsText.split(" ")[0].toLowerCase()
         
-        //user's todos
-        //const todos = []
         switch(word){
             
             case 'add':
                 //get the text after the word 'add'
                 const task = smsText.substr(4, smsText.length).trim()
-                // todos.push(task)
-                
-                // console.log(todos)
-                const response = await client.messages.create({
+
+                const newTask = new Task({
+                    _id: new mongoose.Types.ObjectId(),
+                    task
+                }) 
+
+                await newTask.save()
+                               
+                client.messages.create({
                     from: req.body.To,
                     body: `${task} has been added to your to-do list`,
                     to: req.body.From
-                })
-
-                const counter = 0
-                console.log(counter)
-               if(response.body){
-                   console.log("I am in here....")
-                   counter = counter + 1
-               }
-              console.log("The 1st counter is here...", counter)
+                })       
+                
             break
 
             case 'list':
+
+
+                const today = new Date().toJSON().slice(0,10)
+
+                console.log(today)
+
+                //console.log("This is today's date...", date)
             //send the array of todos
-
-                client.messages.each({
-                    dateSent: "2019-02-04",//don't use documentation -- date format for this field is YYYY-MM-DD
-                    from: req.body.To,
-                    to: req.body.From
-                },
-
-                messages => {
-                   // console.log("The 2nd counter is here...", counter)
-
-                    let smsTwilioTexts = []
-                    smsTwilioTexts.push(messages)
-
-                    console.log("Please work....", smsTwilioTexts.length)
-                    
-                    // smsTexts.forEach(smsText =>{
-                    //     if(smsText.body!=""){      
-                    //         const listItem =  smsTexts.indexOf(smsText)+". "+smsText.body
-                    //         client.messages.create({
-                    //             from: req.body.To,
-                    //             body: listItem,
-                    //             to: req.body.From
-                    //         })                       
-                    //     }
-                    // })
-                    
-
-                  //  console.log('count ', count, "and ", sum)
-                },
+                const allTasks = await Task.find().select('task')
                 
-                ) 
-                
+                console.log(allTasks.length)
+
+                allTasks.forEach((task, index)=>{
+                    console.log("index: ", index, "task: ",task.task)
+                    const number = index+1
+                    client.messages.create({
+                        from: req.body.To,
+                        body: `${number}. ${task.task}`,
+                        to: req.body.From
+                    })  
+                })               
+
                
                 
             break
 
             case 'remove':
-                const taskNumber = smsText.split(' ')[1]
-                todos.splice(taskNumber, 1)
+                const taskNumber = smsText.split(' ')[1] //taskNumber is a string
+
+                const listNumber = parseInt(taskNumber, 10)//convert it into an integer to perform arithmetic
+                const indexNumber = listNumber-1 //add one to index to get list number
+                console.log("Here is the task number", taskNumber, "and the index number", indexNumber)
+                
+                const DBTasks = await Task.find().select('task')       
+                
+                const removeTask = await Task.findById(DBTasks[indexNumber]._id)
+
+                client.messages.create({
+                    from: req.body.To,
+                    body: `${removeTask.task} has been removed`,
+                    to: req.body.From
+                })  
+               
+                await Task.remove({_id: DBTasks[taskNumber]._id})
+               
+               // todos.splice(taskNumber, 1)
             break
 
 

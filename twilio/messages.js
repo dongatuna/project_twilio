@@ -1,8 +1,8 @@
 //const express = require('express')
 //const router = express.Router()
-const TWILIO = require('../config')
-const accountSid = TWILIO.account_SID
-const authToken = TWILIO.auth_Token
+const TWILIO_CONFIG = require('../config')
+const accountSid = TWILIO_CONFIG.account_SID
+const authToken = TWILIO_CONFIG.auth_Token
 const twilio = require('twilio')
 const client = new twilio(accountSid, authToken)
 
