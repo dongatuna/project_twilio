@@ -14,15 +14,34 @@ const client = new twilio(accountSid, authToken)
 router.post('/', async (req, res) => {    
 
     try{
-        const smsText = req.body.Body
-        const word =  smsText.split(" ")[0].toLowerCase()
+        const smsText = req.body.Body.replace(/["']/g, "")
+        console.log("entire text ", smsText)
+        const word =  smsText.split(' ')[0].toLowerCase()
+
+       // const word = wordx.replace(/["']/g, "")
+
+        console.log("removed quotation marks...", word)
+
+        //console.log("First letter ",word[1])
+        // if(preword[1]=="r"){
+        //     console.log("it is true...r is first word...", word)
+        //     let word = preword+'"'
+        //     console.log("This is remove...", wordx)
+        // }else{
+        //     let word = preword
+        //     console.log("Word in the else statement ", word)
+        // }
         
+        
+
         switch(word){
             
-            case 'add':
+            case ('add'):
                 //get the text after the word 'add'
                 const task = smsText.substr(4, smsText.length).trim()
 
+                console.log("I am in the add case")
+                //)
                 const newTask = new Task({
                     _id: new mongoose.Types.ObjectId(),
                     task
@@ -30,15 +49,15 @@ router.post('/', async (req, res) => {
 
                 await newTask.save()
                                
-                client.messages.create({
+                await client.messages.create({
                     from: req.body.To,
-                    body: `${task} has been added to your to-do list`,
+                    body: `"${task}" has been added to your to-do list`,
                     to: req.body.From
                 })       
                 
             break
 
-            case 'list':
+            case ('list'):
 
 
                 const today = new Date().toJSON().slice(0,10)
@@ -46,28 +65,54 @@ router.post('/', async (req, res) => {
                 console.log(today)
 
                 //console.log("This is today's date...", date)
-            //send the array of todos
+                //send the array of todos
                 const allTasks = await Task.find().select('task')
                 
-                console.log(allTasks.length)
+                const taskObject = {}
+                for(let i = 0; i<allTasks.length; i++){
+                    //taskArray.push(allTasks[i])
+                    taskObject[i+1] = allTasks[i].task
+                }
 
-                allTasks.forEach((task, index)=>{
-                    console.log("index: ", index, "task: ",task.task)
-                    const number = index+1
-                    client.messages.create({
-                        from: req.body.To,
-                        body: `${number}. ${task.task}`,
-                        to: req.body.From
-                    })  
-                })               
+                
+                //const taskObject1 = JSON.stringify(taskObject)
+                //console.log("Here is JSON stringify", JSON.stringify(taskObject))
+                const jsonTaskObject = JSON.stringify(taskObject)
+                console.log(jsonTaskObject.length)
+                
+                
+                let result = jsonTaskObject.substring(1, jsonTaskObject.length-1)
+                result = result.replace(/[",']/g, "").replace(/[:]/g, ". ")
+                console.log(result)
+                console.log("Again stupid taskObject", taskObject)
+                // await client.messages.create({
+                //     from: req.body.To,
+                //     body: `${JSON.stringify(taskObject)}`,
+                //     to: req.body.From
+                // })
+
+                //console.log("This is the task array", taskArray)
+                // console.log("This is the task object", taskObject)
+
+                // allTasks.forEach((task, index)=>{
+                //     console.log("index: ", index, "task: ", task.task)
+                //     const number = index+1
+                //     client.messages.create({
+                //         from: req.body.To,
+                //         body: `${number}. ${task.task}`,
+                //         to: req.body.From
+                //     })  
+                // })               
 
                
                 
             break
 
-            case 'remove':
+            case ('remove'):
+            console.log("I am in the remove case")
                 const taskNumber = smsText.split(' ')[1] //taskNumber is a string
 
+                console.log(taskNumber)
                 const listNumber = parseInt(taskNumber, 10)//convert it into an integer to perform arithmetic
                 const indexNumber = listNumber-1 //add one to index to get list number
                 console.log("Here is the task number", taskNumber, "and the index number", indexNumber)
