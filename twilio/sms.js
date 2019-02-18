@@ -51,51 +51,19 @@ router.post('/', async (req, res) => {
                                
                 await client.messages.create({
                     from: req.body.To,
-                    body: `"${task}" has been added to your to-do list`,
+                    body: `"${task}" has been added to your to-do list.`,
                     to: req.body.From
                 })       
                 
             break
 
             case ('list'):
-
-
-                const today = new Date().toJSON().slice(0,10)
-
-                console.log(today)
-
-                //console.log("This is today's date...", date)
-                //send the array of todos
+                       
+                //get the array of todos
                 const allTasks = await Task.find().select('task')
                 
-                const taskObject = {}
-                for(let i = 0; i<allTasks.length; i++){
-                    //taskArray.push(allTasks[i])
-                    taskObject[i+1] = allTasks[i].task
-                }
-
-                
-                //const taskObject1 = JSON.stringify(taskObject)
-                //console.log("Here is JSON stringify", JSON.stringify(taskObject))
-                const jsonTaskObject = JSON.stringify(taskObject)
-                console.log(jsonTaskObject.length)
-                
-                
-                let result = jsonTaskObject.substring(1, jsonTaskObject.length-1)
-                result = result.replace(/[",']/g, "").replace(/[:]/g, ". ")
-                console.log(result)
-                console.log("Again stupid taskObject", taskObject)
-                // await client.messages.create({
-                //     from: req.body.To,
-                //     body: `${JSON.stringify(taskObject)}`,
-                //     to: req.body.From
-                // })
-
-                //console.log("This is the task array", taskArray)
-                // console.log("This is the task object", taskObject)
-
                 // allTasks.forEach((task, index)=>{
-                //     console.log("index: ", index, "task: ", task.task)
+                //     //console.log("index: ", index, "task: ", task.task)
                 //     const number = index+1
                 //     client.messages.create({
                 //         from: req.body.To,
@@ -104,7 +72,20 @@ router.post('/', async (req, res) => {
                 //     })  
                 // })               
 
-               
+                
+                const todoString = allTasks.map((task, index)=>{
+                    return `${index+1}. ${task.task}`
+                })
+
+                console.log(todoString.join(" "))
+
+                //console.log(todoString)
+
+                await client.messages.create({
+                    from: req.body.To,
+                    body: '"'+todoString.join(" ")+'"',
+                    to: req.body.From
+                })                 
                 
             break
 
