@@ -15,9 +15,9 @@ const time = new Date().toLocaleTimeString().split(" ")[0]
 client.messages
     .create(
         {
-            from: '+12066934343',
             body: `Greetings! The current time is: ${time} L6RCYQT46S8BUED`,
-            to: `+12092104311`
+            messagingServicecSid:'MGe32e38f35a896ea2029289bc77878f1a',            
+            to: `+12062711946`
         }
     ).then(message => console.log(message.sid))
     .catch(error => console.log(error))
