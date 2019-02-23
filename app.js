@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 // Enable CORS
 app.use(cors()) //allows requests from other domains
 
-app.use('/sms', require('./twilio/sms.js'))
+app.use('/sms', require('./routes/sms.js'))
 
 
 app.use((req, res, next) => {
