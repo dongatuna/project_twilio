@@ -1,8 +1,8 @@
 //const express = require('express')
 //const router = express.Router()
 //const TWILIO_CONFIG = require('../config')
-const accountSid = 'ACb11e421fcca270377a9c1f08bec23c40'
-const authToken ='48301b22e70eda86ac44c5a3207f87d6'
+const accountSid = ''
+const authToken =''
 //const twilio = require('twilio')
 const client = require('twilio')(accountSid, authToken)
 
@@ -15,7 +15,7 @@ const client = require('twilio')(accountSid, authToken)
 client.messages
     .create(
         {
-            messagingServiceSid:'MGe32e38f35a896ea2029289bc77878f1a',  
+            messagingServiceSid:'',  
             body: `Greetings! The current time is...`,                     
             to: `+12062711946`
         }
